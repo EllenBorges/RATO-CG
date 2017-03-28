@@ -331,7 +331,9 @@ void desenha_Rato(){
             y=0.1*sin(angulo);
             glVertex2f(x-0.1,y-0.1);
         }
+    glEnd();
 
+    glBegin(GL_POLYGON);
 
         cor_Corrente("salmao claro");
         for (i=0; i<=50 ;i++){
@@ -352,6 +354,9 @@ void desenha_Rato(){
             y=0.1*sin(angulo);
             glVertex2f(x+0.13,y-0.1);
         }
+
+    glEnd();
+        glBegin(GL_POLYGON);
         cor_Corrente("salmao claro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
@@ -431,10 +436,10 @@ void desenha_Rato(){
             y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
             x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
 
-            glVertex2f(x,y);    
+            glVertex2f(x,y);
 
         }
-    
+
     glEnd();
 
     glFlush();
