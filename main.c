@@ -1,19 +1,33 @@
+/*------------------------DESCRICAO---------------------------------
+Computacao Grafica
+Nome: Ellen Priscila Borges Oliveira
+RA: 69554
+
+O programa desenha um ratinho bidimensional animado na tela,o qual persegue
+pedaços de queijo que aparecem de acordo com o clique do mouse.
+Ao se aproximar do queijo, ele some da tela.
+
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include <math.h>
 
 #include <GL/glut.h>
 
-/*--------------------Constantes-----------------------------------*/
+/*------------------------CONSTANTES-------------------------------*/
 #define PI 3.141592654
-#define MAX_NO_TEXTURES 5
-/*------------------Variaveis Globais------------------------------*/
-float X = 0, Y = 0, w = 500, h = 500, CentroX_Rato = 0,CentroY_Rato = 0;
-int tamanho = 25;
-float RatoX[200], RatoY[200];
-float Centro_Rato = 0;
 
-/*------------------Estrutura da Lista------------------------------*/
+/*------------------------VARIAVEIS--------------------------------*/
+GLfloat x_Queijo = 0, y_Queijo = 0;
+GLfloat altura_Janela = 500, largura_Janela = 500;
+GLfloat x_Janela=200, y_Janela=200;
+GLfloat X_Centro_Rato = 0.00,Y_Centro_Rato = 0.00;
+GLfloat Raio_Rato = 2.0;
+GLfloat xt = 0, yt = 0, ang=0;
+
+
+/*------------------ESTRUTURA DA LISTA-----------------------------*/
 typedef struct no_lista{
   float x, y;
   struct no_lista *ant;
@@ -23,11 +37,11 @@ typedef struct no_lista{
 typedef struct Lista{
     NO* primeiro;
     NO* ultimo;
-    int tamanho;     /*guarda o tamanho da lista*/
+    int tamanho;
 }LDE;
 
 LDE *listaQueijo;
-/*----------------- Funcoes para a Lista encadeada-----------------*/
+/*----------------- FUNCOES PARA A LISTA ENCADEADA-----------------*/
 
 
 void InicializaLista(LDE *L){
@@ -121,29 +135,31 @@ void DestroiLista(LDE* L){
     free(L);
 }
 
-void ImprimeLista (LDE *L) {
-  if(L->tamanho>0){
 
-      NO *temp = (NO*)malloc(sizeof(NO));
-      temp = L->primeiro;
 
-      while(temp->prox != NULL) {
-        printf("Coordenada X = [%.2f]\n Coordenada Y = [%.2f]\n", temp->x,temp->y);
-        temp = temp->prox;
-      }
-
+void Imprime_ListaQueijo(){
+    if(listaQueijo!=NULL && listaQueijo->tamanho>0)
+        lst_imprime(listaQueijo->primeiro);
 }
- }
 
+ void lst_imprime (NO* lst){
+    NO* p;
+    for (p = lst; p != NULL; p = p->prox)
+        printf("X_Queijo = [%.2f] \n Y_Queijo = [%.2f] \n", p->x, p->y);
+}
 /*------------------------FUNÇÕES DE INICIALIZAÇÃO---------------------*/
-void inicializa_Tela(int w, int h, int x, int y, char nome_janela[]){
+void inicializa_Tela(char nome_janela[]){
 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(w,h);
-    glutInitWindowPosition(x,y);
+    glutInitWindowSize(largura_Janela,altura_Janela);
+    glutInitWindowPosition(x_Janela,y_Janela);
     glutCreateWindow(nome_janela);
     glClearColor(255,255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(-1.0,1.0,-1.0,1.0);
+	glMatrixMode(GL_MODELVIEW);
     glFinish();
 
 }
@@ -180,54 +196,56 @@ void cor_Corrente(char nome_cor[]){
     else if(strcmp (nome_cor, "ouro") == 0)
         glColor3f(1,0.84,0);
 
-
-
-
-
 }
 
 
 /*---------------------- FUNCOES DE TRANSFORMAÇÃO---------------------------*/
 
 
-void rotaciona_Rato(float x, float y){
-    float xlinha, ylinha,angulo_teta,x_r=0,y_r=0;
-    xlinha = (x_r + (x - x_r)*cos(angulo_teta))- ((y - y_r)*sin(angulo_teta));
-    ylinha = (y_r + (x - x_r)*sin(angulo_teta)) + ((y - y_r)*cos(angulo_teta));
+void rotaciona_Rato(GLfloat x0, GLfloat y0, GLfloat angulo_teta){
+    GLfloat x_linha, y_linha,x_r=0,y_r=0;
+    x_linha = (x0 - x_r)*cos(angulo_teta)- ((y0 - y_r)*sin(angulo_teta));
+    y_linha = (x0 - x_r)*sin(angulo_teta) + ((y0 - y_r)*cos(angulo_teta));
 }
 
-void reflexao_Rato(){
-
-
-}
-void translada_Rato(){
-
-
+void translada_Rato(GLfloat deltay, GLfloat deltax){
+    xt+=deltax;
+    yt+=deltay;
 }
 
-
-void Escala_Rato(){
-
-
-
-}
-/*----------------------FUNÇÕES DE TEXTURA-----------------------------*/
-
-void Textura(){
-
+void Escala_Rato(GLfloat x0, GLfloat y0){
+    GLfloat x_linha, y_linha,sx,sy,x_r,y_r;
+    x_linha = x_r + (x0 - x_r)* sx;
+    y_linha = y_r + (y0 - y_r)* sy;
 
 }
+
+float Angulo(GLfloat x, GLfloat y){
+    if(x>0){
+        return atan2(y,x);
+    }
+
+    else return -1;
+}
+
 /*---------------------- FUNCOES DE INTERACAO---------------------------*/
 
 
 
 void SpecialKeys (int key, int x, int y){
     switch (key){
-        case GLUT_KEY_LEFT :
-            /*faz o rato andar pra esquerda;*/
+        case GLUT_KEY_RIGHT:
+            translada_Rato(0,0.09);
+            break;
+        case GLUT_KEY_LEFT:
+            translada_Rato(0,-0.09);
+            break;
+
+        case GLUT_KEY_DOWN :
+            translada_Rato(-0.09,0);
             break ;
-        case GLUT_KEY_RIGHT :
-           /*faz o rato andar pra direita;*/
+        case GLUT_KEY_UP :
+            translada_Rato(0.09,0);
             break ;
         default :
             break ;
@@ -236,15 +254,18 @@ void SpecialKeys (int key, int x, int y){
 }
 
 
-void keyboard (unsigned char key, int x, int y)
-{
-    switch(key)
-    {
+void keyboard (unsigned char key, int x, int y){
+    switch(key){
         case '+':
             /*faz com que o rato aumente seu tamanho*/
+            //Escala_Rato();
             break;
         case '-':
             /*faz com que o rato diminua seu tamanho*/
+             //Escala_Rato();
+            break;
+        case 27:
+            exit(0);
             break;
         default:
             break;
@@ -254,21 +275,17 @@ void keyboard (unsigned char key, int x, int y)
 }
 
 
-
-void MouseInt (int botao, int estado, int x, int y)
-{
-    switch(botao)
-    {
+void MouseInt (int botao, int estado, int x, int y){
+    switch(botao){
     case GLUT_LEFT_BUTTON:
-        if(estado == GLUT_DOWN)
-        {
+        if(estado == GLUT_DOWN){
+            x_Queijo = ((float)x/((float)largura_Janela/2.0))-1.0;
 
-            X = ((float)x/((float)w/2.0))-1.0;
+            y_Queijo = (float) 1 -(float) y/(altura_Janela/2.0);
 
-            Y = (float) 1 - y/(h/2.0);
 
-            InsereNO(listaQueijo,X,Y);
-
+            InsereNO(listaQueijo,x_Queijo,y_Queijo);
+            Imprime_ListaQueijo();
         }
         break;
     }
@@ -277,34 +294,35 @@ void MouseInt (int botao, int estado, int x, int y)
 
 /*---------------------- FUNCOES DE DESENHO---------------------------*/
 
-void desenha_Queijo(){
+void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
+
+/*-----------------------Desenha Queijo-----------------------*/
 
     cor_Corrente("ouro");
     glPointSize(20.0);
     glBegin(GL_POINTS);
-        glVertex2f(X, Y);
+        glVertex2f(x_Queijo_atual,y_Queijo_atual);
+
     glEnd();
-    glFlush();
-}
-void desenha_Rato(){
 
-    int i;
-    float angulo,x,y;
+/*------------------------Desenha Rato------------------------*/
+//}
+//void desenha_Rato(){
 
+
+    GLint i;
+    GLfloat angulo,x,y;
     cor_Corrente("preto");
-/*
+
     /*desenha corpo*/
     glBegin(GL_POLYGON);
-
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.22*cos(angulo);
             y=0.22*sin(angulo);
 
-            glVertex2f(x,y);
-
+            glVertex2f(x+xt,y+yt);
         }
-
     glEnd();
 
     /*desenha cabeça*/
@@ -314,8 +332,8 @@ void desenha_Rato(){
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.15*cos(angulo);
-            y=0.17*sin(angulo);
-            glVertex2f(x,y-0.17);
+            y=0.17*sin(angulo)-0.17;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -327,9 +345,9 @@ void desenha_Rato(){
         cor_Corrente("cinza ardosia escuro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.1*cos(angulo);
-            y=0.1*sin(angulo);
-            glVertex2f(x-0.1,y-0.1);
+            x=0.1*cos(angulo)-0.1;
+            y=0.1*sin(angulo)-0.1;
+            glVertex2f(x+xt,y+yt);
         }
     glEnd();
 
@@ -338,9 +356,9 @@ void desenha_Rato(){
         cor_Corrente("salmao claro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.07*cos(angulo);
-            y=0.07*sin(angulo);
-            glVertex2f(x-0.1,y-0.12);
+            x=0.07*cos(angulo)-0.1;
+            y=0.07*sin(angulo)-0.12;
+            glVertex2f(x+xt,y+yt);
         }
     glEnd();
 
@@ -350,9 +368,9 @@ void desenha_Rato(){
         cor_Corrente("cinza ardosia escuro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.1*cos(angulo);
-            y=0.1*sin(angulo);
-            glVertex2f(x+0.13,y-0.1);
+            x=0.1*cos(angulo)+0.13;
+            y=0.1*sin(angulo)-0.1;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -360,9 +378,9 @@ void desenha_Rato(){
         cor_Corrente("salmao claro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.07*cos(angulo);
-            y=0.07*sin(angulo);
-            glVertex2f(x+0.13,y-0.12);
+            x=0.07*cos(angulo)+0.13;
+            y=0.07*sin(angulo)-0.12;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -374,8 +392,8 @@ void desenha_Rato(){
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.025*cos(angulo);
-            y=0.025*sin(angulo);
-            glVertex2f(x,y-0.32);
+            y=0.025*sin(angulo)-0.32;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -385,16 +403,16 @@ void desenha_Rato(){
         cor_Corrente("branco");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.025*cos(angulo);
-            y=0.025*sin(angulo);
-            glVertex2f(x+0.09,y-0.22);
+            x=0.025*cos(angulo)+0.09;
+            y=0.025*sin(angulo)-0.22;
+            glVertex2f(x+xt,y+yt);
         }
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.015*cos(angulo);
-            y=0.015*sin(angulo);
-            glVertex2f(x+0.085,y-0.212);
+            x=0.015*cos(angulo)+0.085;
+            y=0.015*sin(angulo)-0.212;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -404,16 +422,16 @@ void desenha_Rato(){
         cor_Corrente("branco");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.025*cos(angulo);
-            y=0.025*sin(angulo);
-            glVertex2f(x-0.09,y-0.22);
+            x=0.025*cos(angulo)-0.09;
+            y=0.025*sin(angulo)-0.22;
+            glVertex2f(x+xt,y+yt);
         }
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
-            x=0.015*cos(angulo);
-            y=0.015*sin(angulo);
-            glVertex2f(x-0.085,y-0.212);
+            x=0.015*cos(angulo)-0.085;
+            y=0.015*sin(angulo)-0.212;
+            glVertex2f(x+xt,y+yt);
         }
 
     glEnd();
@@ -422,10 +440,7 @@ void desenha_Rato(){
     cor_Corrente("preto");
 
     glLineWidth(5.0);
-    float P0X=0,P0Y=0.2,
-    P1X=-0.3,P1Y=0.4,
-    P2X=0.3,P2Y=0.4,
-    P3X=0,P3Y=0.6,t;
+    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t;
 
     glBegin(GL_LINE_STRIP);
 
@@ -436,26 +451,72 @@ void desenha_Rato(){
             y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
             x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
 
-            glVertex2f(x,y);
+            glVertex2f(x+xt,y+yt);
 
         }
 
     glEnd();
 
+    /*define o do rato */
+    X_Centro_Rato = X_Centro_Rato +xt;
+    Y_Centro_Rato = Y_Centro_Rato +yt;
     glFlush();
+
+
+}
+/*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
+
+void controla_Rato(){
+    GLint i=0;
+    GLfloat distancia = 0;
+    if(listaQueijo!= NULL){
+        if(listaQueijo->tamanho>0){
+            //criar laco para
+                //rotacionar_Rato(); se precisar
+                //translada_Rato();
+            //enquanto o rato nao chegar no queijo (definir distancia entre dois pontos)
+
+            //se chegou no queijo-> remove queijo da lista
+
+       }
+    }
+
+
+}
+void tamanho_Janela(GLsizei h, GLsizei w){
+
+}
+
+void Display(){
+
+    glClearColor(255,255,255,255);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    /*while(listaQueijo->tamanho>0){
+            NO* p ;
+            for (p = listaQueijo->primeiro; p != NULL; p = p->prox)
+             */
+                //desenha(p->x,p->y);
+               // printf("\n %d %d",p->x,p->y);
+
+    desenha(x_Queijo,y_Queijo);
+
 
 }
 
 int main(int argc, char *argv[]){
 
     glutInit (&argc,argv);
-
-    listaQueijo = (LDE*) malloc(sizeof(LDE));;
+    listaQueijo = (LDE*) malloc(sizeof(LDE));
     InicializaLista(listaQueijo);
-    inicializa_Tela(500,500,300,100,"RUN MOUSE");
-    glutDisplayFunc(desenha_Rato);
+    inicializa_Tela("RUN MOUSE");
+    glutDisplayFunc(Display);
+
+    //glutReshapeFunc(tamanho_Janela);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(SpecialKeys);
     glutMouseFunc(MouseInt);
+
     glutMainLoop();
     free(listaQueijo);
 
