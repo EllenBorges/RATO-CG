@@ -29,7 +29,6 @@ GLfloat X_Rabo_Rato = 0, Y_Rabo_Rato = 0.064;
 GLfloat xt = 0, yt = 0, sx = 1 , sy = 1;
 GLfloat teta = 0;
 
-
 /*------------------ESTRUTURA DA LISTA-----------------------------*/
 typedef struct no_lista{
   float x, y;
@@ -247,13 +246,15 @@ void escala_Rato_Diminui(GLfloat deltasx, GLfloat deltasy){
 
 void escala_Rato_Aumenta(GLfloat deltasx, GLfloat deltasy){
      //modificar condição de parada
-    if(sx<=3 && sy<=3){
+    //if(sx<=3 && sy<=3){
 
-
+    //GLfloat area_rato;
+   // area_rato = pow(Raio_Rato,2)*PI;
+    //if(area_rato<=(altura_Janela*largura_Janela)){
         sx+=deltasx;
         sy+=deltasy;
 
-    }
+    //}
 
 
 }
@@ -318,7 +319,7 @@ void keyboard (unsigned char key, int x, int y){
     switch(key){
         case '+':
             /*faz com que o rato aumente seu tamanho*/
-             escala_Rato_Aumenta_Composta(0.15,0.15);
+            escala_Rato_Aumenta_Composta(0.15,0.15);
 
             break;
         case '-':
@@ -361,30 +362,32 @@ void MouseInt (int botao, int estado, int x, int y){
 
 /*---------------------- FUNCOES DE DESENHO---------------------------*/
 
-void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
+void desenha(){
+
+/*Variaveis locais*/
+    GLint i;
+    GLfloat x,y,xp,yp;
+    GLfloat angulo = 0;
+    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t;
+
 
 /*-----------------------Desenha Queijo-----------------------*/
-
+/*
     cor_Corrente("ouro");
     glPointSize(20.0);
     glBegin(GL_POINTS);
-        glVertex2f(x_Queijo_atual,y_Queijo_atual);
-
+        glVertex2f();
     glEnd();
 
+*/
+
 /*------------------------Desenha Rato------------------------*/
-//}
-//void desenha_Rato(){
 
 
-
-    GLint i;
-    GLfloat x,y,xp,yp;
-    GLfloat angulo= 0;
-    cor_Corrente("preto");
 
     /*desenha corpo*/
     glBegin(GL_POLYGON);
+        cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.22*cos(angulo);
@@ -396,7 +399,6 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
     glEnd();
 
     /*desenha cabeça*/
-
     glBegin(GL_POLYGON);
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
@@ -408,13 +410,10 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
 
     /*desenha orelha esquerda*/
-
     glBegin(GL_POLYGON);
-
         cor_Corrente("cinza ardosia escuro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
@@ -428,7 +427,6 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
     glEnd();
 
     glBegin(GL_POLYGON);
-
         cor_Corrente("salmao claro");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
@@ -442,7 +440,6 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
     glEnd();
 
     /*desenha orelha direita*/
-
     glBegin(GL_POLYGON);
         cor_Corrente("cinza ardosia escuro");
         for (i=0; i<=50 ;i++){
@@ -454,7 +451,6 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
         glBegin(GL_POLYGON);
         cor_Corrente("salmao claro");
@@ -467,11 +463,9 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
 
     /*desenha nariz*/
-
     glBegin(GL_POLYGON);
         cor_Corrente("salmao");
         for (i=0; i<=50 ;i++){
@@ -483,10 +477,9 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
-    /*desenha olho direito*/
 
+    /*desenha olho direito*/
     glBegin(GL_POLYGON);
         cor_Corrente("branco");
         for (i=0; i<=50 ;i++){
@@ -508,10 +501,9 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
-    /*desenha olho esquerdoa*/
 
+    /*desenha olho esquerdoa*/
     glBegin(GL_POLYGON);
         cor_Corrente("branco");
         for (i=0; i<=50 ;i++){
@@ -533,7 +525,6 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
         }
-
     glEnd();
 
     /*desenha bigode*/
@@ -587,9 +578,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
 
     /*desenha rabo */
     cor_Corrente("preto");
-
     glLineWidth(5.0);
-    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t;
 
     glBegin(GL_LINE_STRIP);
 
@@ -604,9 +593,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
-
         }
-
     glEnd();
 
     /*define coordenadas do Rato */
@@ -644,8 +631,6 @@ void controla_Rato(){
             //criar laco para
                 //rotacionar_Rato(); se precisar
                 //translada_Rato();
-
-                glScalef(1.5f, 0.5f, 1.0f);
             //enquanto o rato nao chegar no queijo (definir distancia entre dois pontos)
 
             //se chegou no queijo-> remove queijo da lista
@@ -655,6 +640,8 @@ void controla_Rato(){
 
 
 }
+
+
 void tamanho_Janela(GLsizei h, GLsizei w){
 
 }
@@ -663,18 +650,7 @@ void Display(){
 
     glClearColor(255,255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
-/*
-    while(listaQueijo->tamanho>0){
-            NO* p ;
-            for (p = listaQueijo->primeiro; p != NULL; p = p->prox)
-
-               printf("\n %d %d",p->x,p->y);
-
-    }*/
-    desenha(x_Queijo,y_Queijo);
-
-
-
+    desenha();
 }
 
 int main(int argc, char *argv[]){
