@@ -152,7 +152,7 @@ void Imprime_ListaQueijo(){
 /*------------------------FUNÇÕES DE INICIALIZAÇÃO---------------------*/
 void inicializa_Tela(char nome_janela[]){
 
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB|GLUT_DEPTH);
     glutInitWindowSize(500,500);
     largura_Janela = 500;
     altura_Janela = 500;
@@ -643,14 +643,23 @@ void controla_Rato(){
 
 
 void tamanho_Janela(GLsizei h, GLsizei w){
+    glViewport(0,0,w,h); // Ajustando o visualizador
+    glMatrixMode(GL_PROJECTION); // Trabalhando com a matriz de projeção
+    glLoadIdentity(); // Iniciando a Matriz de cima
+    gluPerspective(60, (GLfloat)w / (GLfloat)h, 0.1,1000.0); //Corrigindo a perspectiva
+    //glortho(-25,25,-2,2,0.1,100); //Método alternativo de fazer o mesmo
+    //glMatrixMode(GL_MODELVIEW);// Voltando a trabalhar com a matriz de modelo
 
 }
 
 void Display(){
 
     glClearColor(255,255,255,255);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
     desenha();
+
+    glutSwapBuffers();
 }
 
 int main(int argc, char *argv[]){
@@ -660,8 +669,8 @@ int main(int argc, char *argv[]){
     InicializaLista(listaQueijo);
     inicializa_Tela("RUN MOUSE");
     glutDisplayFunc(Display);
-
-    //glutReshapeFunc(tamanho_Janela);
+    glutIdleFunc(Display);
+    glutReshapeFunc(tamanho_Janela);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(SpecialKeys);
     glutMouseFunc(MouseInt);
