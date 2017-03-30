@@ -5,7 +5,7 @@ RA: 69554
 
 O programa desenha um ratinho bidimensional animado na tela,o qual persegue
 pedaços de queijo que aparecem de acordo com o clique do mouse.
-Ao se aproximar do queijo, ele some da tela.
+Quando o rato se aproxima do queijo, o queijo some da tela.
 
 */
 
