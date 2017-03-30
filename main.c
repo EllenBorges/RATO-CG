@@ -22,7 +22,7 @@ Ao se aproximar do queijo, ele some da tela.
 GLfloat x_Queijo = 0, y_Queijo = 0;
 GLfloat altura_Janela, largura_Janela ;
 GLfloat x_Janela=200, y_Janela=200;
-GLfloat X_Centro_Rato = 0.00,Y_Centro_Rato = 0.00;
+GLfloat X_Centro_Rato = 0.0,Y_Centro_Rato = 0.0;
 GLfloat Raio_Rato = 0.5;
 GLfloat X_Nariz_Rato = 0, Y_Nariz_Rato = -0.30;
 GLfloat X_Rabo_Rato = 0, Y_Rabo_Rato = 0.064;
@@ -213,7 +213,6 @@ void rotaciona_Rato(GLfloat angulo_teta){
 
     if(teta<2*PI && teta>=0.000){
         teta += angulo_teta;
-        printf("entrei");
     }
 
 
@@ -248,13 +247,13 @@ void escala_Rato_Diminui(GLfloat deltasx, GLfloat deltasy){
 
 void escala_Rato_Aumenta(GLfloat deltasx, GLfloat deltasy){
      //modificar condição de parada
-   // if(sx<=3 && sy<=3){
+    if(sx<=3 && sy<=3){
 
 
         sx+=deltasx;
         sy+=deltasy;
 
-    //}
+    }
 
 
 }
