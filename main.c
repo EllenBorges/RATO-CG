@@ -23,8 +23,9 @@ GLfloat x_Queijo = 0, y_Queijo = 0;
 GLfloat altura_Janela = 500, largura_Janela = 500;
 GLfloat x_Janela=200, y_Janela=200;
 GLfloat X_Centro_Rato = 0.00,Y_Centro_Rato = 0.00;
-GLfloat Raio_Rato = 2.0;
-GLfloat xt = 0, yt = 0, ang=0;
+GLfloat Raio_Rato = 1.0;
+GLfloat xt = 0, yt = 0, sx = 1 , sy = 1;
+
 
 
 /*------------------ESTRUTURA DA LISTA-----------------------------*/
@@ -202,10 +203,16 @@ void cor_Corrente(char nome_cor[]){
 /*---------------------- FUNCOES DE TRANSFORMAÇÃO---------------------------*/
 
 
-void rotaciona_Rato(GLfloat x0, GLfloat y0, GLfloat angulo_teta){
+void rotaciona_Rato(GLfloat angulo_teta){
+    /*
+    GLfloat x0, GLfloat y0, GLfloat angulo_teta
     GLfloat x_linha, y_linha,x_r=0,y_r=0;
+
     x_linha = (x0 - x_r)*cos(angulo_teta)- ((y0 - y_r)*sin(angulo_teta));
-    y_linha = (x0 - x_r)*sin(angulo_teta) + ((y0 - y_r)*cos(angulo_teta));
+    y_linha = (x0 - x_r)*sin(angulo_teta) + ((y0 - y_r)*cos(angulo_teta));*/
+
+
+
 }
 
 void translada_Rato(GLfloat deltay, GLfloat deltax){
@@ -213,11 +220,9 @@ void translada_Rato(GLfloat deltay, GLfloat deltax){
     yt+=deltay;
 }
 
-void Escala_Rato(GLfloat x0, GLfloat y0){
-    GLfloat x_linha, y_linha,sx,sy,x_r,y_r;
-    x_linha = x_r + (x0 - x_r)* sx;
-    y_linha = y_r + (y0 - y_r)* sy;
-
+void Escala_Rato(GLfloat deltasx, GLfloat deltasy){
+    sx+=deltasx;
+    sy+=deltasy;
 }
 
 float Angulo(GLfloat x, GLfloat y){
@@ -258,12 +263,18 @@ void keyboard (unsigned char key, int x, int y){
     switch(key){
         case '+':
             /*faz com que o rato aumente seu tamanho*/
-            //Escala_Rato();
+             Escala_Rato(0.15,0.15);
+
             break;
         case '-':
             /*faz com que o rato diminua seu tamanho*/
-             //Escala_Rato();
+             Escala_Rato(-0.15,-0.15);
             break;
+        case 'r':
+                
+           // rotaciona_Rato();
+            break;
+
         case 27:
             exit(0);
             break;
@@ -310,8 +321,10 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
 //void desenha_Rato(){
 
 
+
     GLint i;
-    GLfloat angulo,x,y;
+    GLfloat x,y;
+    GLfloat angulo= 0;
     cor_Corrente("preto");
 
     /*desenha corpo*/
@@ -321,7 +334,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             x=0.22*cos(angulo);
             y=0.22*sin(angulo);
 
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
     glEnd();
 
@@ -333,7 +346,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.15*cos(angulo);
             y=0.17*sin(angulo)-0.17;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
 
     glEnd();
@@ -347,7 +360,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.1*cos(angulo)-0.1;
             y=0.1*sin(angulo)-0.1;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
     glEnd();
 
@@ -358,7 +371,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.07*cos(angulo)-0.1;
             y=0.07*sin(angulo)-0.12;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
     glEnd();
 
@@ -370,7 +383,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.1*cos(angulo)+0.13;
             y=0.1*sin(angulo)-0.1;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
 
     glEnd();
@@ -380,7 +393,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.07*cos(angulo)+0.13;
             y=0.07*sin(angulo)-0.12;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
 
     glEnd();
@@ -393,7 +406,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.025*cos(angulo);
             y=0.025*sin(angulo)-0.32;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
 
     glEnd();
@@ -405,14 +418,14 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.025*cos(angulo)+0.09;
             y=0.025*sin(angulo)-0.22;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.015*cos(angulo)+0.085;
             y=0.015*sin(angulo)-0.212;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
 
     glEnd();
@@ -424,15 +437,38 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             angulo = 2 * PI * i / 50.0;
             x=0.025*cos(angulo)-0.09;
             y=0.025*sin(angulo)-0.22;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
             angulo = 2 * PI * i / 50.0;
             x=0.015*cos(angulo)-0.085;
             y=0.015*sin(angulo)-0.212;
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
         }
+
+    glEnd();
+
+    /*desenha bigode*/
+    glLineWidth(1.0);
+    glBegin(GL_LINES);
+        cor_Corrente("preto");
+
+        /* bigode esquerdo*/
+        x = -0.12; y = -0.25; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = -0.22; y = -0.22; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = -0.12; y = -0.27; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = -0.24; y = -0.27; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = -0.11; y = -0.28; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = -0.22; y = -0.31; glVertex2f((x+xt)*sx,(y+yt)*sy);
+
+        /* bigode direito*/
+        x = 0.12; y = -0.25; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = 0.22; y = -0.22; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = 0.12; y = -0.27; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = 0.24; y = -0.27; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = 0.11; y = -0.28; glVertex2f((x+xt)*sx,(y+yt)*sy);
+        x = 0.22; y = -0.31; glVertex2f((x+xt)*sx,(y+yt)*sy);
 
     glEnd();
 
@@ -451,7 +487,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
             y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
             x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
 
-            glVertex2f(x+xt,y+yt);
+            glVertex2f((x+xt)*sx,(y+yt)*sy);
 
         }
 
@@ -460,6 +496,7 @@ void desenha(GLfloat x_Queijo_atual, GLfloat y_Queijo_atual){
     /*define o do rato */
     X_Centro_Rato = X_Centro_Rato +xt;
     Y_Centro_Rato = Y_Centro_Rato +yt;
+
     glFlush();
 
 
@@ -474,6 +511,8 @@ void controla_Rato(){
             //criar laco para
                 //rotacionar_Rato(); se precisar
                 //translada_Rato();
+
+                glScalef(1.5f, 0.5f, 1.0f);
             //enquanto o rato nao chegar no queijo (definir distancia entre dois pontos)
 
             //se chegou no queijo-> remove queijo da lista
@@ -491,15 +530,16 @@ void Display(){
 
     glClearColor(255,255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    /*while(listaQueijo->tamanho>0){
+/*
+    while(listaQueijo->tamanho>0){
             NO* p ;
             for (p = listaQueijo->primeiro; p != NULL; p = p->prox)
-             */
-                //desenha(p->x,p->y);
-               // printf("\n %d %d",p->x,p->y);
 
+               printf("\n %d %d",p->x,p->y);
+
+    }*/
     desenha(x_Queijo,y_Queijo);
+
 
 
 }
