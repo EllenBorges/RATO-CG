@@ -19,15 +19,16 @@ Quando o rato se aproxima do queijo, o queijo some da tela.
 #define PI 3.141592654
 
 /*------------------------VARIAVEIS--------------------------------*/
-GLfloat x_Queijo, y_Queijo;
+GLfloat x_novoQueijo, y_novoQueijo;
+
+
 GLfloat altura_Janela, largura_Janela ;
 GLfloat x_Janela=100, y_Janela=100;
-GLfloat X_Centro_Rato = 0.0,Y_Centro_Rato = 0.0;
-GLfloat Raio_Rato = 0.5;
-GLfloat X_Nariz_Rato = 0, Y_Nariz_Rato = -0.30;
-GLfloat X_Rabo_Rato = 0, Y_Rabo_Rato = 0.064;
-GLfloat xt = 0, yt = 0, sx = 1 , sy = 1;
+GLfloat X_Centro_Rato = 0.0000,Y_Centro_Rato = 0.0000;
+
+GLfloat xt = 0, yt = 0, sx = 1 , sy = 1,xp,yp;
 GLfloat teta = 0,ang = 0;
+GLfloat distanciaX = 0, distanciaY = 0;
 
 
 /*------------------ESTRUTURA DA LISTA-----------------------------*/
@@ -64,17 +65,17 @@ void InsereNO(LDE *L, float x,float y){
     if(L->primeiro==NULL && L->ultimo==NULL){
         L->primeiro = novo;
         L->ultimo = novo;
+        L->tamanho++;
     }
     else{
 
         L->ultimo->prox = novo;
         L->ultimo = novo;
         L->ultimo->prox = NULL;
+        L->tamanho++;
     }
-     L->tamanho++;
+
 }
-
-
 
 void RemoveNO(LDE *L){
     if(L->tamanho>0){ /*se a lista nao esta vazia*/
@@ -108,6 +109,7 @@ void Imprime_ListaQueijo(){
     if(listaQueijo!=NULL && listaQueijo->tamanho>0)
         lst_imprime(listaQueijo->primeiro);
 }
+
 
 
 
@@ -191,9 +193,9 @@ void rotaciona_Rato_Composta(GLfloat angulo_teta){
     translada_Rato(xtemp,ytemp);
 }
 
-void translada_Rato(GLfloat deltay, GLfloat deltax){
-    xt+=deltax;
-    yt+=deltay;
+void translada_Rato(GLfloat deltax, GLfloat deltay){
+    xt=xt+deltax;
+    yt=yt+deltay;
 }
 
 void escala_Rato_Diminui(GLfloat deltasx, GLfloat deltasy){
@@ -244,31 +246,21 @@ void escala_Rato_Diminui_Composta(GLfloat deltasx, GLfloat deltasy){
 
 }
 
-float Angulo(GLfloat x, GLfloat y){
-    if(x>0){
-        return atan2(y,x);
-    }
-
-    else return -1;
-}
-
 /*---------------------- FUNCOES DE INTERACAO---------------------------*/
-
-
 
 void SpecialKeys (int key, int x, int y){
     switch (key){
-        case GLUT_KEY_RIGHT:
+        case GLUT_KEY_UP:
             translada_Rato(0,0.09);
             break;
-        case GLUT_KEY_LEFT:
-            translada_Rato(0,-0.09);
+        case GLUT_KEY_DOWN:
+            translada_Rato(0,(-0.09));
             break;
 
-        case GLUT_KEY_DOWN :
-            translada_Rato(-0.09,0);
+        case GLUT_KEY_LEFT :
+            translada_Rato((-0.09),0);
             break ;
-        case GLUT_KEY_UP :
+        case GLUT_KEY_RIGHT :
             translada_Rato(0.09,0);
             break ;
         default :
@@ -276,7 +268,6 @@ void SpecialKeys (int key, int x, int y){
         }
         glutPostRedisplay() ;
 }
-
 
 void keyboard (unsigned char key, int x, int y){
     switch(key){
@@ -305,18 +296,19 @@ void keyboard (unsigned char key, int x, int y){
     glutPostRedisplay();
 }
 
-
 void MouseInt (int botao, int estado, int x, int y){
     switch(botao){
     case GLUT_LEFT_BUTTON:
         if(estado == GLUT_DOWN){
-            x_Queijo = ((float)x/((float)largura_Janela/2.0))-1.0;
+            x_novoQueijo = ((float)x/((float)largura_Janela/2.0))-1.0;
 
-            y_Queijo = (float) 1 -(float) y/(altura_Janela/2.0);
+            y_novoQueijo = (float) 1 -(float) y/(altura_Janela/2.0);
 
+            InsereNO(listaQueijo,x_novoQueijo,y_novoQueijo);
 
-            InsereNO(listaQueijo,x_Queijo,y_Queijo);
-            Imprime_ListaQueijo();
+            printf("\nTentando inserir queijo na posicao (%.3f,%.3f)\n",x_novoQueijo,y_novoQueijo);
+            controla_Rato();
+
         }
         break;
     }
@@ -325,28 +317,16 @@ void MouseInt (int botao, int estado, int x, int y){
 
 /*---------------------- FUNCOES DE DESENHO---------------------------*/
 
-void desenha(){
 
+void desenha_Rato(){
 
 /*----------------------Variaveis locais-----------------------*/
     GLint i;
-    GLfloat x,y,xp,yp;
+    GLfloat x,y;
     GLfloat angulo = 0;
     GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t;
 
-
-/*-----------------------Desenha Queijo-----------------------*/
-
-    cor_Corrente("ouro");
-    glPointSize(20.0);
-    glBegin(GL_POINTS);
-        glVertex2f(x_Queijo,y_Queijo);
-    glEnd();
-
 /*------------------------Desenha Rato------------------------*/
-
-
-
     /*desenha corpo*/
     glBegin(GL_POLYGON);
         cor_Corrente("preto");
@@ -359,6 +339,8 @@ void desenha(){
             glVertex2f(xp,yp);
         }
     glEnd();
+
+
 
     /*desenha cabeça*/
     glBegin(GL_POLYGON);
@@ -553,53 +535,85 @@ void desenha(){
     glEnd();
 
     /*define coordenadas do Rato */
-    X_Centro_Rato = (X_Centro_Rato + xt)*sx;
-    Y_Centro_Rato = (Y_Centro_Rato + yt)*sy;
 
-    xp = (((X_Nariz_Rato+xt)*sx)*cos(teta))-(((Y_Nariz_Rato+yt)*sy)*sin(teta));
-    yp = (((X_Nariz_Rato+xt)*sx)*sin(teta))+(((Y_Nariz_Rato+yt)*sy)*cos(teta));
+    xp = (((X_Centro_Rato+xt)*sx)*cos(teta))-(((Y_Centro_Rato+yt)*sy)*sin(teta));
+    yp = (((X_Centro_Rato+xt)*sx)*sin(teta))+(((Y_Centro_Rato+yt)*sy)*cos(teta));
 
-    Y_Nariz_Rato = yp;
-    X_Nariz_Rato = xp;
-
-    xp = (((X_Rabo_Rato+xt)*sx)*cos(teta))-(((Y_Rabo_Rato+yt)*sy)*sin(teta));
-    yp = (((X_Rabo_Rato+xt)*sx)*sin(teta))+(((Y_Rabo_Rato+yt)*sy)*cos(teta));
-
-    X_Rabo_Rato = xp;
-    Y_Rabo_Rato = yp;
-
-    xp=0;
-    yp=0;
-
-    Raio_Rato = sqrt(pow(sx*X_Centro_Rato-sx*X_Nariz_Rato,2)+pow(sy*Y_Centro_Rato-sy*Y_Nariz_Rato,2));
-
-    glFlush();
-
+    X_Centro_Rato = xp;
+    Y_Centro_Rato = yp;
 
 }
+
+void desenha_Queijo(){
+/*-----------------------Desenha Queijo-----------------------*/
+    cor_Corrente("ouro");
+    glPointSize(20.0);
+    glBegin(GL_POINTS);
+        glVertex2f(x_novoQueijo,y_novoQueijo);
+    glEnd();
+
+}
+
 /*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
 
 
-void Timer(int value)
-{
+void Timer(int value){
+    glutPostRedisplay();
+    glutTimerFunc(10000000,Timer, 1);
 
-    GLfloat px,py,qx,qy, normaq, normap;
+}
+void controla_Rato(){
+
+/* rotacao*/
+/*
+    GLfloat px,py,qx,qy, normaq = 1, normap=1;
+    ang =0;
     px = X_Nariz_Rato-X_Centro_Rato;
     py = Y_Nariz_Rato-Y_Centro_Rato;
 
-    qx = x_Queijo-X_Centro_Rato;
-    qy = y_Queijo-Y_Centro_Rato;
+    qx = x_novoQueijo-X_Centro_Rato;
+    qy = y_novoQueijo-Y_Centro_Rato;
 
     normap = sqrt(pow(px,2)+pow(py,2));
     normaq = sqrt(pow(qx,2)+pow(qy,2));
-    ang = acosf((px*qx)+(py*qy)/(normap*normaq));
+    if((px*qx)+(py*qy)==0)
+       ang = PI/2;
 
+    if(normap>0.0000 && normaq>0.0000)
+        ang = acosf((px*qx)+(py*qy)/(normap*normaq));
+    printf("\n ang %.2f",ang);
 
-    glutPostRedisplay();
-    glutTimerFunc(33,Timer, 1);
+*/
+/*translacao*/
+
+    GLfloat i;
+    if(listaQueijo!=NULL){
+       NO* p;
+        p = listaQueijo->primeiro;
+
+          //transladar em x
+        while(p!=NULL){
+          distanciaX = (p->x) - X_Centro_Rato;
+
+          printf("\n px[%.4f]- nx[%.4f]  = dx[%.9f]\n ",p->x, X_Centro_Rato,distanciaX);
+          for(i=0; i<=50;i++){
+            translada_Rato(distanciaX/50,0);
+            glutPostRedisplay();
+          }
+          //transladar em y
+          distanciaY = (p->y) - Y_Centro_Rato;
+
+          printf("\n py[%.4f]- ny[%.4f]  = dy[%.9f] \n",p->y, Y_Centro_Rato,distanciaY);
+
+          for(i=0; i<=50;i++){
+            translada_Rato(0,distanciaY/50);
+            glutPostRedisplay();
+          }
+          p = p->prox;
+        }
+    }
 
 }
-
 
 
 void tamanho_Janela(GLsizei h, GLsizei w){
@@ -609,7 +623,11 @@ void Display(){
     glClearColor(255,255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
-    desenha();
+    desenha_Queijo();
+    desenha_Rato();
+
+    //controla_Rato();
+    glFlush();
 
 
 }
@@ -626,7 +644,7 @@ int main(int argc, char *argv[]){
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(SpecialKeys);
     glutMouseFunc(MouseInt);
-    glutTimerFunc(50, Timer, 1);
+    //glutTimerFunc(10000000, Timer, 1);
     glutMainLoop();
     free(listaQueijo);
 
