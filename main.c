@@ -327,6 +327,9 @@ void desenha_Rato(){
     GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t,xpp,ypp;
 
 /*------------------------Desenha Rato------------------------*/
+
+    X_Centro_Rato = xt;
+    Y_Centro_Rato = yt;
     /*desenha corpo*/
 
     glBegin(GL_POLYGON);
@@ -339,9 +342,6 @@ void desenha_Rato(){
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
             /*define coordenadas do Rato */
-            X_Centro_Rato = xp;
-            Y_Centro_Rato = yp;
-
         }
     glEnd();
 
@@ -606,8 +606,6 @@ void controla_Rato(){
           for(i=0; i<=10000;i++){
             translada_Rato(0,distanciaY/10000);
              distanciaY = (p->y) - Y_Centro_Rato;
-
-
          }
           p = p->prox;
            glutPostRedisplay();
