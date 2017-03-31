@@ -622,24 +622,35 @@ void desenha(){
 
 }
 /*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
-
 void controla_Rato(){
-    GLint i=0;
-    GLfloat distancia = 0;
-    if(listaQueijo!= NULL){
-        if(listaQueijo->tamanho>0){
+
+    GLfloat distanciay = 0 , distanciax = 0, x_temp,y_temp,i=0;
+    NO* temp;
+    while(listaQueijo!= NULL){
+
+        temp = listaQueijo->primeiro;
+        x_temp = temp->x;
+        y_temp = temp->y;
+        distanciax = queijo_correntex - temp->prox->x;
+        distanciay = queijoy_correntey - temp->prox->y;
+
+        for(i=0; i<=20; i++){
+            translada_Rato(distanciax/20,distanciay/20);
+
             //criar laco para
                 //rotacionar_Rato(); se precisar
                 //translada_Rato();
             //enquanto o rato nao chegar no queijo (definir distancia entre dois pontos)
 
-            //se chegou no queijo-> remove queijo da lista
+            //se chegou no queijo-> remove queijo da list
 
        }
+       temp = temp->prox;
     }
 
 
 }
+
 
 
 void tamanho_Janela(GLsizei h, GLsizei w){
