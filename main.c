@@ -19,20 +19,20 @@ Quando o rato se aproxima do queijo, o queijo some da tela.
 #define PI 3.141592654
 
 /*------------------------VARIAVEIS--------------------------------*/
-GLfloat x_Queijo = 0, y_Queijo = 0;
+GLfloat x_Queijo, y_Queijo;
 GLfloat altura_Janela, largura_Janela ;
-GLfloat x_Janela=200, y_Janela=200;
+GLfloat x_Janela=100, y_Janela=100;
 GLfloat X_Centro_Rato = 0.0,Y_Centro_Rato = 0.0;
 GLfloat Raio_Rato = 0.5;
 GLfloat X_Nariz_Rato = 0, Y_Nariz_Rato = -0.30;
 GLfloat X_Rabo_Rato = 0, Y_Rabo_Rato = 0.064;
 GLfloat xt = 0, yt = 0, sx = 1 , sy = 1;
-GLfloat teta = 0;
+GLfloat teta = 0,ang = 0;
+
 
 /*------------------ESTRUTURA DA LISTA-----------------------------*/
 typedef struct no_lista{
   float x, y;
-  struct no_lista *ant;
   struct no_lista *prox;
 }NO;
 
@@ -54,105 +54,68 @@ void InicializaLista(LDE *L){
 
 }
 
-NO* Busca(LDE *L, float x, float y){
-
-    NO *temp;
-    for (temp = L->primeiro; temp!=NULL;temp = temp->prox) {
-        if ((temp->x == x)&&(temp->y == y)){
-          return temp;
-        }
-    }
-    return NULL; /* não achou o no */
-}
-
-
 /*insere um novo no no final da lista*/
 void InsereNO(LDE *L, float x,float y){
 
     NO *novo = (NO*)malloc(sizeof(NO));
-    novo->ant = NULL;
     novo->prox = NULL;
     novo->x = x;
     novo->y = y;
-
-
     if(L->primeiro==NULL && L->ultimo==NULL){
         L->primeiro = novo;
         L->ultimo = novo;
-        L->tamanho++;
-
     }
-
     else{
-        novo->prox = NULL;
-        novo->ant= L->ultimo;
+
         L->ultimo->prox = novo;
         L->ultimo = novo;
-        L->tamanho++;
-
+        L->ultimo->prox = NULL;
     }
+     L->tamanho++;
 }
 
-void RemoveNO(LDE *L, float x, float y){
+
+
+void RemoveNO(LDE *L){
     if(L->tamanho>0){ /*se a lista nao esta vazia*/
 
-	    NO* temp = Busca(L,x,y);
+	    NO* temp = listaQueijo->primeiro;
 	    if(temp!=NULL){
-		/*remove começo*/
-		if(temp->ant==NULL){
-		    L->primeiro = temp->prox;
-		    L->primeiro->ant = NULL;
+            /*remove começo*/
 
-		}/*remove final*/
-		else if(temp->prox==NULL){
-		    L->ultimo= temp->ant;
-		    temp->ant->prox=NULL;
-		    L->tamanho--;
-
-		}/*remove no meio*/
-		else {
-		    temp->ant->prox = temp->prox;
-		    temp->prox->ant = temp->ant;
-
-		}
-		L->tamanho--;
-		temp->prox = NULL;
-		temp->ant= NULL;
-		free(temp);
+            L->primeiro = temp->prox;
+            L->tamanho--;
+            temp->prox = NULL;
+            free(temp);
 
 	   }
      }
 
 }
 
-void DestroiLista(LDE* L){
-    NO* no = L->primeiro;
-    NO* temp;
 
-    while (no != NULL) {
-        temp = no->prox;
-        free(no);
-        no = temp;
-    }
-    free(L);
+
+void lst_imprime (NO* lst){
+    NO* p;
+
+    for (p = lst; p != NULL; p = p->prox)
+        printf("X_Queijo = [%.2f] \n Y_Queijo = [%.2f] \n", p->x, p->y);
+
+
 }
-
-
 
 void Imprime_ListaQueijo(){
     if(listaQueijo!=NULL && listaQueijo->tamanho>0)
         lst_imprime(listaQueijo->primeiro);
 }
 
- void lst_imprime (NO* lst){
-    NO* p;
-    for (p = lst; p != NULL; p = p->prox)
-        printf("X_Queijo = [%.2f] \n Y_Queijo = [%.2f] \n", p->x, p->y);
-}
+
+
+
 /*------------------------FUNÇÕES DE INICIALIZAÇÃO---------------------*/
 void inicializa_Tela(char nome_janela[]){
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB|GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_SINGLE| GLUT_RGB);
     glutInitWindowSize(500,500);
     largura_Janela = 500;
     altura_Janela = 500;
@@ -364,7 +327,8 @@ void MouseInt (int botao, int estado, int x, int y){
 
 void desenha(){
 
-/*Variaveis locais*/
+
+/*----------------------Variaveis locais-----------------------*/
     GLint i;
     GLfloat x,y,xp,yp;
     GLfloat angulo = 0;
@@ -372,14 +336,12 @@ void desenha(){
 
 
 /*-----------------------Desenha Queijo-----------------------*/
-/*
+
     cor_Corrente("ouro");
     glPointSize(20.0);
     glBegin(GL_POINTS);
-        glVertex2f();
+        glVertex2f(x_Queijo,y_Queijo);
     glEnd();
-
-*/
 
 /*------------------------Desenha Rato------------------------*/
 
@@ -577,19 +539,13 @@ void desenha(){
 
 
     /*desenha rabo */
-    cor_Corrente("preto");
     glLineWidth(5.0);
-
     glBegin(GL_LINE_STRIP);
-
         for (t=0; t<=1 ;t=t+0.01){
-
+            cor_Corrente("preto");
             /*Curva de Bezier*/
-
             y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
             x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
-
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
             xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
@@ -615,62 +571,47 @@ void desenha(){
     xp=0;
     yp=0;
 
-    Raio_Rato = sqrt(pow(sx*X_Centro_Rato-sx*X_Rabo_Rato,2)+pow(sy*Y_Centro_Rato-sy*Y_Rabo_Rato,2));
+    Raio_Rato = sqrt(pow(sx*X_Centro_Rato-sx*X_Nariz_Rato,2)+pow(sy*Y_Centro_Rato-sy*Y_Nariz_Rato,2));
 
     glFlush();
 
 
 }
 /*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
-void controla_Rato(){
 
-    GLfloat distanciay = 0 , distanciax = 0, x_temp,y_temp,i=0;
-    NO* temp;
-    while(listaQueijo!= NULL){
 
-        temp = listaQueijo->primeiro;
-        x_temp = temp->x;
-        y_temp = temp->y;
-        distanciax = queijo_correntex - temp->prox->x;
-        distanciay = queijoy_correntey - temp->prox->y;
+void Timer(int value)
+{
 
-        for(i=0; i<=20; i++){
-            translada_Rato(distanciax/20,distanciay/20);
+    GLfloat px,py,qx,qy, normaq, normap;
+    px = X_Nariz_Rato-X_Centro_Rato;
+    py = Y_Nariz_Rato-Y_Centro_Rato;
 
-            //criar laco para
-                //rotacionar_Rato(); se precisar
-                //translada_Rato();
-            //enquanto o rato nao chegar no queijo (definir distancia entre dois pontos)
+    qx = x_Queijo-X_Centro_Rato;
+    qy = y_Queijo-Y_Centro_Rato;
 
-            //se chegou no queijo-> remove queijo da list
+    normap = sqrt(pow(px,2)+pow(py,2));
+    normaq = sqrt(pow(qx,2)+pow(qy,2));
+    ang = acosf((px*qx)+(py*qy)/(normap*normaq));
 
-       }
-       temp = temp->prox;
-    }
 
+    glutPostRedisplay();
+    glutTimerFunc(33,Timer, 1);
 
 }
 
 
 
 void tamanho_Janela(GLsizei h, GLsizei w){
-    glViewport(0,0,w,h); // Ajustando o visualizador
-    glMatrixMode(GL_PROJECTION); // Trabalhando com a matriz de projeção
-    glLoadIdentity(); // Iniciando a Matriz de cima
-    gluPerspective(60, (GLfloat)w / (GLfloat)h, 0.1,1000.0); //Corrigindo a perspectiva
-    //glortho(-25,25,-2,2,0.1,100); //Método alternativo de fazer o mesmo
-    //glMatrixMode(GL_MODELVIEW);// Voltando a trabalhar com a matriz de modelo
-
 }
 
 void Display(){
-
     glClearColor(255,255,255,255);
-    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     desenha();
 
-    glutSwapBuffers();
+
 }
 
 int main(int argc, char *argv[]){
@@ -680,12 +621,12 @@ int main(int argc, char *argv[]){
     InicializaLista(listaQueijo);
     inicializa_Tela("RUN MOUSE");
     glutDisplayFunc(Display);
-    glutIdleFunc(Display);
-    glutReshapeFunc(tamanho_Janela);
+    //glutIdleFunc(Display);
+    //glutReshapeFunc(tamanho_Janela);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(SpecialKeys);
     glutMouseFunc(MouseInt);
-
+    glutTimerFunc(50, Timer, 1);
     glutMainLoop();
     free(listaQueijo);
 
