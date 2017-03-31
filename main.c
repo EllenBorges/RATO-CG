@@ -324,10 +324,11 @@ void desenha_Rato(){
     GLint i;
     GLfloat x,y;
     GLfloat angulo = 0;
-    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t;
+    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t,xpp,ypp;
 
 /*------------------------Desenha Rato------------------------*/
     /*desenha corpo*/
+
     glBegin(GL_POLYGON);
         cor_Corrente("preto");
         for (i=0; i<=50 ;i++){
@@ -337,6 +338,10 @@ void desenha_Rato(){
             xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
             yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
             glVertex2f(xp,yp);
+            /*define coordenadas do Rato */
+            X_Centro_Rato = xp;
+            Y_Centro_Rato = yp;
+
         }
     glEnd();
 
@@ -534,13 +539,6 @@ void desenha_Rato(){
         }
     glEnd();
 
-    /*define coordenadas do Rato */
-
-    xp = (((X_Centro_Rato+xt)*sx)*cos(teta))-(((Y_Centro_Rato+yt)*sy)*sin(teta));
-    yp = (((X_Centro_Rato+xt)*sx)*sin(teta))+(((Y_Centro_Rato+yt)*sy)*cos(teta));
-
-    X_Centro_Rato = xp;
-    Y_Centro_Rato = yp;
 
 }
 
@@ -596,20 +594,23 @@ void controla_Rato(){
           distanciaX = (p->x) - X_Centro_Rato;
 
           printf("\n px[%.4f]- nx[%.4f]  = dx[%.9f]\n ",p->x, X_Centro_Rato,distanciaX);
-          for(i=0; i<=50;i++){
-            translada_Rato(distanciaX/50,0);
-            glutPostRedisplay();
+          for(i=0; i<=10000;i++){
+            translada_Rato(distanciaX/10000,0);
+
           }
           //transladar em y
           distanciaY = (p->y) - Y_Centro_Rato;
 
           printf("\n py[%.4f]- ny[%.4f]  = dy[%.9f] \n",p->y, Y_Centro_Rato,distanciaY);
 
-          for(i=0; i<=50;i++){
-            translada_Rato(0,distanciaY/50);
-            glutPostRedisplay();
-          }
+          for(i=0; i<=10000;i++){
+            translada_Rato(0,distanciaY/10000);
+             distanciaY = (p->y) - Y_Centro_Rato;
+
+
+         }
           p = p->prox;
+           glutPostRedisplay();
         }
     }
 
