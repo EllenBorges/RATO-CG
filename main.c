@@ -26,9 +26,11 @@ GLfloat altura_Janela, largura_Janela ;
 GLfloat x_Janela=100, y_Janela=100;
 GLfloat X_Centro_Rato = 0.0000,Y_Centro_Rato = 0.0000;
 
-GLfloat xt = 0, yt = 0, sx = 1 , sy = 1,xp,yp;
+GLfloat xt = 0.00, yt = 0.000, sx = 1 , sy = 1,xp,yp;
 GLfloat teta = 0,ang = 0;
-GLfloat distanciaX = 0, distanciaY = 0;
+GLfloat pxt= 0.00,pyt=0.00;
+
+GLint cont = 0;
 
 
 /*------------------ESTRUTURA DA LISTA-----------------------------*/
@@ -77,20 +79,21 @@ void InsereNO(LDE *L, float x,float y){
 
 }
 
-void RemoveNO(LDE *L){
-    if(L->tamanho>0){ /*se a lista nao esta vazia*/
+void RemoveNO(){
 
+    if(listaQueijo!=NULL){ /*se a lista nao esta vazia*/
 	    NO* temp = listaQueijo->primeiro;
-	    if(temp!=NULL){
+        free(listaQueijo->primeiro);
             /*remove começo*/
+        listaQueijo->primeiro = temp->prox;
+        listaQueijo->tamanho--;
 
-            L->primeiro = temp->prox;
-            L->tamanho--;
-            temp->prox = NULL;
-            free(temp);
+         if (listaQueijo->primeiro == NULL)
+            listaQueijo->ultimo = NULL;
 
-	   }
-     }
+
+    }
+
 
 }
 
@@ -109,6 +112,9 @@ void Imprime_ListaQueijo(){
     if(listaQueijo!=NULL && listaQueijo->tamanho>0)
         lst_imprime(listaQueijo->primeiro);
 }
+
+
+
 
 
 
@@ -211,15 +217,12 @@ void escala_Rato_Diminui(GLfloat deltasx, GLfloat deltasy){
 
 void escala_Rato_Aumenta(GLfloat deltasx, GLfloat deltasy){
      //modificar condição de parada
-    //if(sx<=3 && sy<=3){
+    if(sx<=3 && sy<=3){
 
-    //GLfloat area_rato;
-   // area_rato = pow(Raio_Rato,2)*PI;
-    //if(area_rato<=(altura_Janela*largura_Janela)){
         sx+=deltasx;
         sy+=deltasy;
 
-    //}
+    }
 
 
 }
@@ -245,6 +248,328 @@ void escala_Rato_Diminui_Composta(GLfloat deltasx, GLfloat deltasy){
     translada_Rato(xtemp,ytemp);
 
 }
+
+/*---------------------- FUNCOES DE DESENHO---------------------------*/
+void desenha_Queijo(){
+/*-----------------------Desenha Queijo-----------------------*/
+
+    if(cont>0){
+        cor_Corrente("ouro");
+        glPointSize(20.0);
+        glBegin(GL_POINTS);
+            glVertex2f(x_novoQueijo,y_novoQueijo);
+        glEnd();
+    }
+
+
+}
+
+void desenha_Rato(){
+
+
+/*----------------------Variaveis locais-----------------------*/
+    GLint i;
+    GLfloat x,y;
+    GLfloat angulo = 0;
+    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t,xpp,ypp;
+
+/*------------------------Desenha Rato------------------------*/
+
+    X_Centro_Rato = xt;
+    Y_Centro_Rato = yt;
+    /*desenha corpo*/
+
+    glBegin(GL_POLYGON);
+        cor_Corrente("preto");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.22*cos(angulo);
+            y=0.22*sin(angulo);
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+            /*define coordenadas do Rato */
+        }
+    glEnd();
+
+
+
+    /*desenha cabeça*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("preto");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.15*cos(angulo);
+            y=0.17*sin(angulo)-0.17;
+           xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha orelha esquerda*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("cinza ardosia escuro");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.1*cos(angulo)-0.1;
+            y=0.1*sin(angulo)-0.1;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    glBegin(GL_POLYGON);
+        cor_Corrente("salmao claro");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.07*cos(angulo)-0.1;
+            y=0.07*sin(angulo)-0.12;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha orelha direita*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("cinza ardosia escuro");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.1*cos(angulo)+0.13;
+            y=0.1*sin(angulo)-0.1;
+           xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+        glBegin(GL_POLYGON);
+        cor_Corrente("salmao claro");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.07*cos(angulo)+0.13;
+            y=0.07*sin(angulo)-0.12;
+           xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha nariz*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("salmao");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.025*cos(angulo);
+            y=0.025*sin(angulo)-0.32;
+           xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha olho direito*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("branco");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.025*cos(angulo)+0.09;
+            y=0.025*sin(angulo)-0.22;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+        cor_Corrente("preto");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.015*cos(angulo)+0.085;
+            y=0.015*sin(angulo)-0.212;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha olho esquerdoa*/
+    glBegin(GL_POLYGON);
+        cor_Corrente("branco");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.025*cos(angulo)-0.09;
+            y=0.025*sin(angulo)-0.22;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+        cor_Corrente("preto");
+        for (i=0; i<=50 ;i++){
+            angulo = 2 * PI * i / 50.0;
+            x=0.015*cos(angulo)-0.085;
+            y=0.015*sin(angulo)-0.212;
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+    /*desenha bigode*/
+    glLineWidth(1.0);
+    glBegin(GL_LINES);
+        cor_Corrente("preto");
+
+        /* bigode esquerdo*/
+        x = -0.12; y = -0.25;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = -0.22; y = -0.22;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = -0.12; y = -0.27;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = -0.24; y = -0.27;
+       xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = -0.11; y = -0.28;
+       xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = -0.22; y = -0.31;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+        /* bigode direito*/
+        x = 0.12; y = -0.25;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = 0.22; y = -0.22;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = 0.12; y = -0.27;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = 0.24; y = -0.27;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = 0.11; y = -0.28;
+       xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+
+        x = 0.22; y = -0.31;
+        xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+        yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+        glVertex2f(xp+xt,yp+yt);
+    glEnd();
+
+
+    /*desenha rabo */
+    glLineWidth(5.0);
+    glBegin(GL_LINE_STRIP);
+        for (t=0; t<=1 ;t=t+0.01){
+            cor_Corrente("preto");
+            /*Curva de Bezier*/
+            y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
+            x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
+            xp = ((x*sx)*cos(teta))-((y*sy)*sin(teta));
+            yp = ((x*sx)*sin(teta))+((y*sy)*cos(teta));
+            glVertex2f(xp+xt,yp+yt);
+        }
+    glEnd();
+
+
+
+
+}
+
+void desenha(){
+    glClearColor(255,255,255,255);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    desenha_Queijo();
+    desenha_Rato();
+
+    glFlush();
+
+}
+/*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
+
+
+
+void controla_Rato(){
+
+/* rotacao*/
+/*
+    GLfloat px,py,qx,qy, normaq = 1, normap=1;
+    ang =0;
+    px = X_Nariz_Rato-X_Centro_Rato;
+    py = Y_Nariz_Rato-Y_Centro_Rato;
+
+    qx = x_novoQueijo-X_Centro_Rato;
+    qy = y_novoQueijo-Y_Centro_Rato;
+
+    normap = sqrt(pow(px,2)+pow(py,2));
+    normaq = sqrt(pow(qx,2)+pow(qy,2));
+    if((px*qx)+(py*qy)==0)
+       ang = PI/2;
+
+    if(normap>0.0000 && normaq>0.0000)
+        ang = acosf((px*qx)+(py*qy)/(normap*normaq));
+    printf("\n ang %.2f",ang);
+
+*/
+/*translacao*/
+
+    GLfloat i;
+
+        if(listaQueijo!=NULL){
+
+            NO *tmp = listaQueijo->primeiro;
+
+            while(tmp!=NULL){
+                pxt = tmp->x ;
+                pyt = tmp->y ;
+                printf("\ntmp x %.3f tmp y %.3f\n",tmp->x,tmp->y);
+                printf("\npxt x %.3f pyt y %.3f\n",pxt,pyt);
+
+                for(i=0; i<20;i++){
+                    xt+=pxt/20;
+                    yt+=pyt/20;
+                    desenha();
+                    usleep(100*50);
+                    glFlush();
+                }
+                Imprime_ListaQueijo();
+                xt=pxt;
+                yt=pyt;
+                tmp=tmp->prox;
+
+                RemoveNO();
+
+            }
+    }
+
+}
+
+
 
 /*---------------------- FUNCOES DE INTERACAO---------------------------*/
 
@@ -300,335 +625,21 @@ void MouseInt (int botao, int estado, int x, int y){
     switch(botao){
     case GLUT_LEFT_BUTTON:
         if(estado == GLUT_DOWN){
+            cont++;
             x_novoQueijo = ((float)x/((float)largura_Janela/2.0))-1.0;
 
             y_novoQueijo = (float) 1 -(float) y/(altura_Janela/2.0);
 
             InsereNO(listaQueijo,x_novoQueijo,y_novoQueijo);
-
             printf("\nTentando inserir queijo na posicao (%.3f,%.3f)\n",x_novoQueijo,y_novoQueijo);
+
             controla_Rato();
+            printf("\n xt %.3f yt %.3f \n",xt,yt);
 
         }
         break;
     }
     glutPostRedisplay();
-}
-
-/*---------------------- FUNCOES DE DESENHO---------------------------*/
-
-
-void desenha_Rato(){
-
-/*----------------------Variaveis locais-----------------------*/
-    GLint i;
-    GLfloat x,y;
-    GLfloat angulo = 0;
-    GLfloat P0X=0,P0Y=0.2,P1X=-0.3,P1Y=0.4,P2X=0.3,P2Y=0.4,P3X=0,P3Y=0.6,t,xpp,ypp;
-
-/*------------------------Desenha Rato------------------------*/
-
-    X_Centro_Rato = xt;
-    Y_Centro_Rato = yt;
-    /*desenha corpo*/
-
-    glBegin(GL_POLYGON);
-        cor_Corrente("preto");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.22*cos(angulo);
-            y=0.22*sin(angulo);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-            /*define coordenadas do Rato */
-        }
-    glEnd();
-
-
-
-    /*desenha cabeça*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("preto");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.15*cos(angulo);
-            y=0.17*sin(angulo)-0.17;
-           // glVertex2f((x+xt)*sx,(y+yt)*sy);
-           xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha orelha esquerda*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("cinza ardosia escuro");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.1*cos(angulo)-0.1;
-            y=0.1*sin(angulo)-0.1;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    glBegin(GL_POLYGON);
-        cor_Corrente("salmao claro");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.07*cos(angulo)-0.1;
-            y=0.07*sin(angulo)-0.12;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha orelha direita*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("cinza ardosia escuro");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.1*cos(angulo)+0.13;
-            y=0.1*sin(angulo)-0.1;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-        glBegin(GL_POLYGON);
-        cor_Corrente("salmao claro");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.07*cos(angulo)+0.13;
-            y=0.07*sin(angulo)-0.12;
-           //glVertex2f((x+xt)*sx,(y+yt)*sy);
-           xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha nariz*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("salmao");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.025*cos(angulo);
-            y=0.025*sin(angulo)-0.32;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha olho direito*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("branco");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.025*cos(angulo)+0.09;
-            y=0.025*sin(angulo)-0.22;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-        cor_Corrente("preto");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.015*cos(angulo)+0.085;
-            y=0.015*sin(angulo)-0.212;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha olho esquerdoa*/
-    glBegin(GL_POLYGON);
-        cor_Corrente("branco");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.025*cos(angulo)-0.09;
-            y=0.025*sin(angulo)-0.22;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-        cor_Corrente("preto");
-        for (i=0; i<=50 ;i++){
-            angulo = 2 * PI * i / 50.0;
-            x=0.015*cos(angulo)-0.085;
-            y=0.015*sin(angulo)-0.212;
-            //glVertex2f((x+xt)*sx,(y+yt)*sy);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-    /*desenha bigode*/
-    glLineWidth(1.0);
-    glBegin(GL_LINES);
-        cor_Corrente("preto");
-
-        /* bigode esquerdo*/
-        x = -0.12; y = -0.25;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-
-        x = -0.22; y = -0.22;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-
-        x = -0.12; y = -0.27;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = -0.24; y = -0.27;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = -0.11; y = -0.28;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = -0.22; y = -0.31;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-
-        /* bigode direito*/
-        x = 0.12; y = -0.25;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = 0.22; y = -0.22;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = 0.12; y = -0.27;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = 0.24; y = -0.27;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = 0.11; y = -0.28;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-        x = 0.22; y = -0.31;
-        xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-        yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));glVertex2f(xp,yp);
-    glEnd();
-
-
-    /*desenha rabo */
-    glLineWidth(5.0);
-    glBegin(GL_LINE_STRIP);
-        for (t=0; t<=1 ;t=t+0.01){
-            cor_Corrente("preto");
-            /*Curva de Bezier*/
-            y =(pow((1-t),3) * P0Y) +(3 * t * pow((1-t),2)*P1Y) + (3 * pow(t,2)* (1-t)*P2Y) + (pow(t,3)*P3Y);
-            x =(pow((1-t),3) * P0X) +(3 * t * pow((1-t),2)*P1X) + (3 * pow(t,2)* (1-t)*P2X) + (pow(t,3)*P3X);
-            xp = (((x+xt)*sx)*cos(teta))-(((y+yt)*sy)*sin(teta));
-            yp = (((x+xt)*sx)*sin(teta))+(((y+yt)*sy)*cos(teta));
-            glVertex2f(xp,yp);
-        }
-    glEnd();
-
-
-}
-
-void desenha_Queijo(){
-/*-----------------------Desenha Queijo-----------------------*/
-    cor_Corrente("ouro");
-    glPointSize(20.0);
-    glBegin(GL_POINTS);
-        glVertex2f(x_novoQueijo,y_novoQueijo);
-    glEnd();
-
-}
-
-/*------------------FUNÇÕES DE MOVIMENTACAO DO RATO----------------------*/
-
-
-void Timer(int value){
-    glutPostRedisplay();
-    glutTimerFunc(10000000,Timer, 1);
-
-}
-void controla_Rato(){
-
-/* rotacao*/
-/*
-    GLfloat px,py,qx,qy, normaq = 1, normap=1;
-    ang =0;
-    px = X_Nariz_Rato-X_Centro_Rato;
-    py = Y_Nariz_Rato-Y_Centro_Rato;
-
-    qx = x_novoQueijo-X_Centro_Rato;
-    qy = y_novoQueijo-Y_Centro_Rato;
-
-    normap = sqrt(pow(px,2)+pow(py,2));
-    normaq = sqrt(pow(qx,2)+pow(qy,2));
-    if((px*qx)+(py*qy)==0)
-       ang = PI/2;
-
-    if(normap>0.0000 && normaq>0.0000)
-        ang = acosf((px*qx)+(py*qy)/(normap*normaq));
-    printf("\n ang %.2f",ang);
-
-*/
-/*translacao*/
-
-    GLfloat i;
-    if(listaQueijo!=NULL){
-       NO* p;
-        p = listaQueijo->primeiro;
-
-          //transladar em x
-        while(p!=NULL){
-          distanciaX = (p->x) - X_Centro_Rato;
-
-          printf("\n px[%.4f]- nx[%.4f]  = dx[%.9f]\n ",p->x, X_Centro_Rato,distanciaX);
-          for(i=0; i<=10000;i++){
-            translada_Rato(distanciaX/10000,0);
-
-          }
-          //transladar em y
-          distanciaY = (p->y) - Y_Centro_Rato;
-
-          printf("\n py[%.4f]- ny[%.4f]  = dy[%.9f] \n",p->y, Y_Centro_Rato,distanciaY);
-
-          for(i=0; i<=10000;i++){
-            translada_Rato(0,distanciaY/10000);
-             distanciaY = (p->y) - Y_Centro_Rato;
-         }
-          p = p->prox;
-           glutPostRedisplay();
-        }
-    }
-
-}
-
-
-void tamanho_Janela(GLsizei h, GLsizei w){
-}
-
-void Display(){
-    glClearColor(255,255,255,255);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    desenha_Queijo();
-    desenha_Rato();
-
-    //controla_Rato();
-    glFlush();
-
-
 }
 
 int main(int argc, char *argv[]){
@@ -637,13 +648,12 @@ int main(int argc, char *argv[]){
     listaQueijo = (LDE*) malloc(sizeof(LDE));
     InicializaLista(listaQueijo);
     inicializa_Tela("RUN MOUSE");
-    glutDisplayFunc(Display);
-    //glutIdleFunc(Display);
-    //glutReshapeFunc(tamanho_Janela);
+    glutDisplayFunc(desenha);
+
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(SpecialKeys);
     glutMouseFunc(MouseInt);
-    //glutTimerFunc(10000000, Timer, 1);
+
     glutMainLoop();
     free(listaQueijo);
 
